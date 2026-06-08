@@ -1,35 +1,50 @@
+<?php
+require_once "app/Model/Joueur.php";
+
+$joueurSelectionne = null;
+$erreur = "";
+
+
+if (isset($_GET['id']) && !empty($_GET['id'])) {
+    $id = (int)$_GET['id']; 
+    try {
+        
+        $joueurSelectionne = Joueur::findById($id);
+        
+        if (!$joueurSelectionne) {
+            $erreur = "Ce joueur n'existe pas.";
+        }
+    } catch (PDOException $e) {
+        $erreur = "Erreur de base de données : " . $e->getMessage();
+    }
+} else {
+    $erreur = "Aucun joueur n'a été sélectionné.";
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Journée Tournoi LAN jeux-vidéo</title>
-    <link rel="stylesheet" href="css/Style.css">
+    <title>Fiche de Joueur</title>
 </head>
-
 <body>
-    <?php
-    require_once "app/view/header.php";
-    ?>
+    <?php require_once "app/view/header.php"; ?>
     <main>
-        <h2>Jean Permatête</h2>
-        <article id="presentation" class="exemple">
-            <img src="assets/img/racing-6249392_1280.jpg" alt="photo de profil du joueur">
-            <div id="biographie">
-            <h3>jeu de prédilection : valorant</h3>
-            <p><strong>biographie : </strong>jeune talent venant de Liège Jean Permatête du haut de ses 25ans vien montrer pourquoi on le surnomme le meilleur support de wallonie </p>
-            <a href="prestationEx.php">prestation 1 : scène valorant (8h-10h) </a>
-            <a href="prestationEx.php">prestation 2 : espace détente (12h-13h) </a>
-            <a href="prestationEx.php">prestation 3 : à programmer </a>
-            </div>
-            
-
-        </article>
+        
+    <?php if ($erreur) {
+       echo "<span>$erreur</span>";
+    }elseif ($joueurSelectionne) {
+         
+        echo "<h2>Profil de ". $joueurSelectionne->getPseudo() . "</h2>
+        <article id='presentation' class='exemple'>
+        <img src='assets/img/" . $joueurSelectionne->getImage() . "' alt='Photo'>
+        <div id='biographie'>
+        <p>" . $joueurSelectionne->getDescription() . "</p>
+        </div>
+        </article>";
+    }?>
+        
     </main>
-    <?php
-    require_once "app/view/footer.php";
-    ?>
+    <?php require_once "app/view/footer.php"; ?>
 </body>
-
 </html>

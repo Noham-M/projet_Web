@@ -4,15 +4,15 @@ class Heure {
     private int $Heure1;
     private int $Heure2;
 
-    public function __construct(int $Heure1) {
-        $this->setHeures($Heure1);
+    public function __construct(int $idHeure) {
+        $this->setHeures($idHeure);
     }
 
-    public function setHeures(int $Heure1) {
-        if ($Heure1 < 1 || $Heure1 > 5) {
+    public function setHeures(int $idHeure) {
+        if ($idHeure < 1 || $idHeure > 5) {
             throw new InvalidArgumentException("la variable heure1 ne peut que être comprise entre 1 et 5");
         }
-        switch ($Heure1) {
+        switch ($idHeure) {
             case 1: 
                 $this->Heure1 = 8;
                 $this->Heure2 = 10;

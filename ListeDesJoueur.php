@@ -1,11 +1,13 @@
 <?php
 require_once "app/Model/Joueur.php";
-$allPlayer = [
-    new Joueur("jean", "valorant","'assets/img/racing-6249392_1280.jpg'", 1,"permatete","jean permatete","jeanPermatete@gmail.com","ggggg", "Petit joueur de Valorant venant de Liège, c'est l'un des meilleurs supports du pays."),
-    new Joueur("Eva mChercherUneBierre", "csgo","'assets/img/racing-6249392_1280.jpg'", 2,"permatete","jean permatete","jeanPermatete@gmail.com","ggggg", "joueuse competitive elle est la pour révolutionner l'art de l'awp sur csgo"),
-    new Joueur("JuJuCactus", "Overwatch","'assets/img/racing-6249392_1280.jpg'", 4,"permatete","jean permatete","jeanPermatete@gmail.com","ggggg", "Joueuse Dps sur Overwatch, elle est venue parce qu'il manquait des joueurs"),
-    new Joueur("XxGalaxyDestroyerxX", "Overwatch","'assets/img/racing-6249392_1280.jpg'", 4,"permatete","jean permatete","jeanPermatete@gmail.com","ggggg", "Joueur support sur overwatch il est la pour concurencer tout les support de ce tournoi")
-];
+$Joueurs = [];
+$erreur = '';
+try {
+    $Joueurs = Joueur::findAll();
+} catch (PDOException $e) {
+    $erreur = "Erreur : " . $e->getMessage();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -51,7 +53,7 @@ $allPlayer = [
                 </div>
                 <div class="filterGroup">
                     <label for="prograPresta">Afficher artiste programmé</label>
-                    <input type="checkbox" id="prograPresta"> 
+                    <input type="checkbox" id="prograPresta">
                 </div>
                 <button type="submit" id="bouttonFiltre">Rechercher</button>
 
@@ -60,15 +62,16 @@ $allPlayer = [
 
         <div class="ListeVignette">
             <?php
-            foreach ($allPlayer as $value) {
-                echo "<a href='Joueur.php' class='vignette'>
-
-                <img src=" . $value->getImage() . "alt='portrait du joueur'>
+            if ($erreur) {
+                echo "<span> $erreur <span>";
+            } else {
+                foreach ($Joueurs as $value) {
+                echo "<a href='JoueurEx.php?id=" . $value->getIdJoueur() . "' class='vignette'>
+                <img src='" . "assets/img/" . $value->getImage() . "' alt='portrait du joueur'>
                 <h3>" . $value->getPseudo() . "</h3>
-
-                <p><strong>Présence :</strong>" . $value->getheure()->toString() ."(" . $value->getScene() . ") .</p>
                 <p>" . $value->getDescription() . "</p>
-            </a>";
+                </a>";
+                }
             }
             ?>
 
