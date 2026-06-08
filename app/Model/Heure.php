@@ -4,7 +4,7 @@ class Heure {
     private int $Heure1;
     private int $Heure2;
 
-    public function __construct($Heure1) {
+    public function __construct(int $Heure1) {
         $this->setHeures($Heure1);
     }
 
@@ -35,6 +35,9 @@ class Heure {
                 break;
         }
 
+    }
+    public function getIdHeure(): int {
+        return $this->idHeure;
     }
 
     public function getHeure1(): int {

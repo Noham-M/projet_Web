@@ -9,7 +9,7 @@ class Prestation
     private int $idJoueur;
     private int $idHeure;
 
-    public function __construct(int $idPrestation,int $idScene,int $idJoueur, int $Heure string $titre, string $description, string $image)
+    public function __construct(int $idPrestation,int $idScene,int $idJoueur, int $idHeure, String $titre, string $description, string $image)
     {   
         $this->setIdPrestation($idPrestation);
         $this->setTitre($titre);
@@ -19,7 +19,7 @@ class Prestation
         $this->setIdJoueur($idJoueur);
         $this->setIdHeure($idHeure);
     }
-    public function setIdHeure(int idHeure) {
+    public function setIdHeure(int $idHeure) {
         if (empty($idHeure)) {
             throw new invalidArgumentException("l'id ne peut pas être vide");
         }
@@ -35,7 +35,7 @@ class Prestation
         if (empty($idScene)) {
             throw new invalidArgumentException("l'id ne peut pas être vide");
         }
-        $this->IdScene = $idScene;
+        $this->idScene = $idScene;
     }
     public function setIdPrestation(int $idPrestation) {
         if (empty($idPrestation)) {
@@ -79,19 +79,19 @@ class Prestation
         return $this->image;
     }
 
-    public function getIdPrestation(): string
+    public function getIdPrestation(): int
     {
         return $this->idPrestation;
     }
-     public function getIdScene(): string
+     public function getIdScene(): int
     {
         return $this->idScene;
     }
-     public function getIdJoueur(): string
+     public function getIdJoueur(): int
     {
         return $this->idJoueur;
     }
-     public function getIdHeure(): string
+     public function getIdHeure(): int
     {
         return $this->idHeure;
     }

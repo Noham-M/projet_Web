@@ -6,7 +6,7 @@ class Scene
 
     public function __construct(string $nom, int $idScene)
     {
-        $this->getNom($nom);
+        $this->setNom($nom);
         $this->setIdScene($idScene);
     }
 
@@ -26,7 +26,7 @@ class Scene
         $this->idScene = $idScene;
     }
 
-    public function getScene()
+    public function getNom()
     {
         return $this->nom;
     }

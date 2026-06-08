@@ -18,19 +18,19 @@ class Joueur extends Utilisateur
         $this->setIdUtilisateur($idUtilisateur);
 
     }
-    public function setIdJoueur($idJoueur) {
+    public function setIdJoueur(String $idJoueur) {
         if (empty($idJoueur)) {
             throw new invalidArgumentException("l'id ne peut pas être null");
         }
         $this->idJoueur = $idJoueur;
     }
-    public function setIdUtilisateur($idUtilisateur) {
+    public function setIdUtilisateur(String $idUtilisateur) {
         if (empty($idUtilisateur)) {
             throw new invalidArgumentException("l'id ne peut pas être null");
         }
         $this->idUtilisateur = $idUtilisateur;
     }
-    public function setPseudo($pseudo)
+    public function setPseudo(String $pseudo)
     {
         if (empty($pseudo)) {
             throw new InvalidArgumentException("le pseudo ne peut pas être null ou vide");
@@ -68,6 +68,14 @@ class Joueur extends Utilisateur
     public function getPseudo(): string
     {
         return $this->pseudo;
+    }
+
+    public function getIdUtilisateur(): int {
+        return $this->idUtilisateur;
+    }
+
+    public function getIdJoueur() :int {
+        return $this->idJoueur;
     }
     
 

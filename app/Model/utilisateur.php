@@ -15,27 +15,27 @@ class Utilisateur
         $this->setPrenom($prenom);
         $this->setEmail($Email);
     }
-    public function setidUser($idUser) {
+    public function setidUser(String $idUser) {
         if($idUser < 0 ) {
             throw new InvalidArgumentException("l'id ne peut pas être inférieur à 0");
         }
         $this->idUser;
     }
-    public function setPassWord($passWord)
+    public function setPassWord(String $passWord)
     {
         if (empty($passWord)) {
             throw new InvalidArgumentException("le mdp ne peut pas être null ou vide");
         }
         $this->passWord = $passWord;
     }
-    public function setPrenom($prenom)
+    public function setPrenom(String $prenom)
     {
         if (empty($prenom)) {
             throw new InvalidArgumentException("le prenom ne peut pas être null ou vide");
         }
         $this->prenom = $prenom;
     }
-    public function setEmail($Email)
+    public function setEmail(String $Email)
     {
         if (empty($Email)) {
             throw new InvalidArgumentException("l'email ne peut pas être null ou vide");
@@ -66,6 +66,10 @@ class Utilisateur
     public function getPassWord(): string
     {
         return $this->passWord;
+    }
+
+    public function getIdUser(): int {
+        return $this->idUser;
     }
 }
 ?>
