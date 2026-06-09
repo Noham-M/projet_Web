@@ -49,5 +49,22 @@ class Heure {
     public function toString(): String {
         return $this->Heure1 . "h - ". $this->Heure2. "h";
     }
+
+    public static function findAll() {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("SELECT * from heure order by idHeure desc");
+        $requete->execute();
+        $requete->setFetchMode(PDO::FETCH_CLASS, Heure::class);
+        return $requete->fetchAll();
+    }
+    
+    public static function findById(int $id) {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("Select * from heure where idHeure = :id");
+        $requete->bindValue(':id',$id,PDO::PARAM_INT);
+        $requete->execute();
+        $requete->setFetchMode(PDO::FETCH_CLASS,Heure::class);
+        return $requete->fetch() ?: null;
+    }
 }
 ?>

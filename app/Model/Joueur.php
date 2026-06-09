@@ -1,8 +1,9 @@
 <?php
 require_once "utilisateur.php";
+require_once "prestation.php";
 require_once __DIR__ . "/../database/database.php";
 
-class Joueur extends Utilisateur
+class Joueur 
 {
     private int $idJoueur;
     private string $pseudo;
@@ -103,5 +104,14 @@ class Joueur extends Utilisateur
         $requete->setFetchMode(PDO::FETCH_CLASS,Joueur::class);
         return $requete->fetch() ?: null;
     }
+
+    public function getPrestations() {
+         $pdo = Database::getPDO();
+        $requete = $pdo->prepare("Select * from prestation where idJoueur = :id");
+        $requete->bindValue(':id',$this->getIdJoueur(),PDO::PARAM_INT);
+        $requete->execute();
+        $requete->setFetchMode(PDO::FETCH_CLASS,Prestation::class);
+        return $requete->fetchAll() ;
+    } 
 }
 ?>

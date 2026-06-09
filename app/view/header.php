@@ -1,3 +1,6 @@
+<?php
+$pageActuelle = basename($_SERVER['PHP_SELF']); 
+?>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -16,12 +19,20 @@
             <a class="SeConnecter" href="connexion.php">Se connecter ?</a>
         </section>
 
-        <nav>
-            <ul>
-                <li><a href="index.php">Accueil</a></li>
-                <li><a href="ListeDesJoueur.php">Liste des joueurs</a></li>
-                <li><a class="current" href="listePrestation.php">Prestations</a></li>
-                <li><a href="contact.php">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+       <nav>
+        <ul>
+            <li>
+                <a class="<?= ($pageActuelle == 'index.php') ? 'current' : '' ?>" href="index.php">Accueil</a>
+            </li>
+            <li>
+                <a class="<?= ($pageActuelle == 'ListeDesJoueur.php') ? 'current' : '' ?>" href="ListeDesJoueur.php">Liste des joueurs</a>
+            </li>
+            <li>
+                <a class="<?= ($pageActuelle == 'listePrestation.php') ? 'current' : '' ?>" href="listePrestation.php">Prestations</a>
+            </li>
+            <li>
+                <a class="<?= ($pageActuelle == 'contact.php') ? 'current' : '' ?>" href="contact.php">Contact</a>
+            </li>
+        </ul>
+    </nav>
+</header>

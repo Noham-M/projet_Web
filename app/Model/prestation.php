@@ -9,15 +9,15 @@ class Prestation
     private int $idJoueur;
     private int $idHeure;
 
-    public function __construct(int $idPrestation,int $idScene,int $idJoueur, int $idHeure, String $titre, string $description, string $image)
+    public function __construct(?int $idPrestation = null,?int $idScene = null,?int $idJoueur = null, ?int $idHeure = null, ?String $titre = null, ?string $description = null, ?string $image = null)
     {   
-        $this->setIdPrestation($idPrestation);
-        $this->setTitre($titre);
-        $this->setDescription($description);
-        $this->setImage($image);
-        $this->setIdScene($idScene);
-        $this->setIdJoueur($idJoueur);
-        $this->setIdHeure($idHeure);
+        if ($idPrestation !== null) $this->setIdPrestation($idPrestation);
+        if ($titre !== null) $this->setTitre($titre);
+        if ($description !== null) $this->setDescription($description);
+        if ($image !== null) $this->setImage($image);
+        if ($idScene !== null) $this->setIdScene($idScene);
+        if ($idJoueur !== null) $this->setIdJoueur($idJoueur);
+        if ($idHeure !== null) $this->setIdHeure($idHeure);
     }
     public function setIdHeure(int $idHeure) {
         if (empty($idHeure)) {
@@ -94,6 +94,23 @@ class Prestation
      public function getIdHeure(): int
     {
         return $this->idHeure;
+    }
+
+    public static function findAll() {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("SELECT * from prestation order by idPrestation desc");
+        $requete->execute();
+        $requete->setFetchMode(PDO::FETCH_CLASS, Prestation::class);
+        return $requete->fetchAll();
+    }
+    
+    public static function findById(int $id) {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("Select * from Prestation where idPrestation = :id");
+        $requete->bindValue(':id',$id,PDO::PARAM_INT);
+        $requete->execute();
+        $requete->setFetchMode(PDO::FETCH_CLASS,Prestation::class);
+        return $requete->fetch() ?: null;
     }
 
 

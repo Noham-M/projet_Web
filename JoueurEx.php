@@ -1,8 +1,11 @@
 <?php
 require_once "app/Model/Joueur.php";
+require_once "app/Model/prestation.php";
 
 $joueurSelectionne = null;
+$prestations = [];
 $erreur = "";
+$cpt = 1;
 
 
 if (isset($_GET['id']) && !empty($_GET['id'])) {
@@ -19,6 +22,12 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     }
 } else {
     $erreur = "Aucun joueur n'a été sélectionné.";
+}
+
+try {
+    $prestations = $joueurSelectionne->getPrestations();
+} catch (PDOException $e) {
+    $erreur = "Erreur de base de données : " . $e->getMessage();
 }
 ?>
 
@@ -39,8 +48,12 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         <article id='presentation' class='exemple'>
         <img src='assets/img/" . $joueurSelectionne->getImage() . "' alt='Photo'>
         <div id='biographie'>
-        <p>" . $joueurSelectionne->getDescription() . "</p>
-        </div>
+        <p>" . $joueurSelectionne->getDescription() . "</p>";
+        foreach ($prestations as $presta) {
+            echo " <a href='prestationEx.php'>prestation " . $cpt . " : " . $presta->getTitre() . "</a>";
+            $cpt++;
+        }
+        echo "</div>
         </article>";
     }?>
         

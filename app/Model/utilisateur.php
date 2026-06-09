@@ -71,5 +71,22 @@ class Utilisateur
     public function getIdUser(): int {
         return $this->idUser;
     }
+
+    public static function findAll() {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("SELECT * from utilisateur order by idUtilisateur desc");
+        $requete->execute();
+        $requete->setFetchMode(PDO::FETCH_CLASS, Utilisateur::class);
+        return $requete->fetchAll();
+    }
+    
+    public static function findById(int $id) {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("Select * from Utilisateur where idUtilisateur = :id");
+        $requete->bindValue(':id',$id,PDO::PARAM_INT);
+        $requete->execute();
+        $requete->setFetchMode(PDO::FETCH_CLASS, Utilisateur::class);
+        return $requete->fetch() ?: null;
+    }
 }
 ?>
