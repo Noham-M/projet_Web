@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . "/../database/database.php";
+require_once "Scene.php";
 class Prestation
 {
     private int $idPrestation;
@@ -112,6 +114,35 @@ class Prestation
         $requete->setFetchMode(PDO::FETCH_CLASS,Prestation::class);
         return $requete->fetch() ?: null;
     }
+
+    public function findScene(int $id) {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("Select * from Scene where idScene = :id");
+        $requete->bindValue(':id',$id,PDO::PARAM_INT);
+        $requete->execute();
+        $requete->setFetchMode(PDO::FETCH_CLASS,Scene::class);
+        return $requete->fetch() ?: null;
+    }
+
+    public function findJoueur(int $id) {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("Select * from Joueur where idJoueur = :id");
+        $requete->bindValue(':id',$id,PDO::PARAM_INT);
+        $requete->execute();
+        $requete->setFetchMode(PDO::FETCH_CLASS,Joueur::class);
+        return $requete->fetch() ?: null;
+    }
+
+    public function findHeure(int $id) {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("Select * from Heure where idHeure = :id");
+        $requete->bindValue(':id',$id,PDO::PARAM_INT);
+        $requete->execute();
+        $requete->setFetchMode(PDO::FETCH_CLASS,Heure::class);
+        return $requete->fetch() ?: null;
+    }
+
+
 
 
 }

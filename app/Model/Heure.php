@@ -4,8 +4,8 @@ class Heure {
     private int $Heure1;
     private int $Heure2;
 
-    public function __construct(int $idHeure) {
-        $this->setHeures($idHeure);
+    public function __construct(?int $idHeure = null) {
+        if ($idHeure !== null) $this->setHeures($idHeure);
     }
 
     public function setHeures(int $idHeure) {

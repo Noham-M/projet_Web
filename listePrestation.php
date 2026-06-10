@@ -2,6 +2,12 @@
 include_once "app/Model/prestation.php";
 $exemplePresta = [];
 $erreur = '';
+
+try {
+    $exemplePresta = Prestation::findAll();
+} catch(PDOException $e) {
+    $erreur = "Erreur : " . $e->getMessage();
+}
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
     $actual = $_GET['Lieu'] ?? "";
 }
@@ -52,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
                 </div>
                 <div class="filterGroup">
                     <label for="prograPresta">Afficher prestation programmé</label>
-                    <input type="checkbox" id="prograPresta"> 
+                    <input type="checkbox" id="prograPresta" name="prograpresta" value="1"> 
                 </div>
 
                 <button type="submit">Rechercher</button>
@@ -62,10 +68,14 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
         <div class="ListeVignette">
             <?php
             foreach ($exemplePresta as $value) {
-                echo "<a href='prestationEx.php' class='vignette'>
-                <img src='". $value->getImage() . "'alt='photo de la prestation'>
+                if (isset($_GET['prograpresta']) && ($value->getIdHeure() === null || $value->getIdHeure() == 0)) {
+                    continue;
+                }
+                $Scene = $value->findScene($value->getidScene());
+                echo "<a href='prestationEx.php?id=" . $value->getIdPrestation() . "' class='vignette'>
+                <img src='assets/img/". $value->getImage() . "'alt='photo de la prestation'>
                 <h3>" . $value->getTitre() . "</h3>
-                <p><strong>Scène : </strong>" . $value->getScene() . "</p>
+                <p><strong>Scène : </strong>" . $Scene->getnom() . "</p>
                 <p>" . $value->getDescription() . "</p>
                 </a>";
 

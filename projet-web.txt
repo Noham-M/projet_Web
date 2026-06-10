@@ -1,15 +1,19 @@
 
+--
+-- Base de données : `projet-web`
+--
 
+-- --------------------------------------------------------
 
-
-
-
+--
+-- Structure de la table `heure`
+--
 
 CREATE TABLE `heure` (
   `idHeure` int(1) NOT NULL,
   `Heure1` int(1) NOT NULL,
   `Heure2` int(1) NOT NULL
-) 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `heure`
@@ -62,19 +66,21 @@ CREATE TABLE `prestation` (
   `image` varchar(100) NOT NULL,
   `idScene` int(2) NOT NULL,
   `idJoueur` int(2) NOT NULL,
-  `idHeure` int(2) NOT NULL
+  `idheure` int(2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `prestation`
 --
 
-INSERT INTO `prestation` (`idPrestation`, `titre`, `description`, `image`, `idScene`, `idJoueur`, `idHeure`) VALUES
+INSERT INTO `prestation` (`idPrestation`, `titre`, `description`, `image`, `idScene`, `idJoueur`, `idheure`) VALUES
 (1, 'tournoi valorant', 'petit tournoi valorant', 'video-games-1557358_1280.jpg', 1, 1, 1),
 (2, 'presentation jeu de l\'année', 'petite présentation des jeu de l\'années avec un guest', 'video-games-1557358_1280.jpg', 3, 2, 1),
 (3, 'overwatch classic', 'tournoi sur l\'ancien mode de jeu d\'overwatch', 'video-games-1557358_1280.jpg', 4, 4, 2),
 (4, 'lucio parcours', 'petit concours de parcours pendant la pause de midi', 'video-games-1557358_1280.jpg', 3, 6, 3),
-(5, 'counter-strike tournament', 'gros tournoi du soir avec le grand joueur ThéoryCraft', 'video-games-1557358_1280.jpg', 2, 7, 5);
+(5, 'counter-strike tournament', 'gros tournoi du soir avec le grand joueur ThéoryCraft', 'video-games-1557358_1280.jpg', 2, 7, 5),
+(6, 'présentation héro', 'présentation nouveau héros', 'video-games-1557358_1280.jpg', 2, 1, 4),
+(7, 'tournoi valorant', 'gros tournoi valorant', 'video-games-1557358_1280.jpg', 1, 1, 5);
 
 -- --------------------------------------------------------
 
@@ -153,7 +159,7 @@ ALTER TABLE `prestation`
   ADD PRIMARY KEY (`idPrestation`),
   ADD KEY `fk_prestation_joueur` (`idJoueur`),
   ADD KEY `fk_prestation_scene` (`idScene`),
-  ADD KEY `fk_heure_prestation` (`idHeure`);
+  ADD KEY `fk_heure_prestation` (`idheure`);
 
 --
 -- Index pour la table `scene`

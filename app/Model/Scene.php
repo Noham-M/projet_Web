@@ -4,10 +4,10 @@ class Scene
     private int $idScene;
     private string $nom;
 
-    public function __construct(string $nom, int $idScene)
+    public function __construct(?string $nom = null, ?int $idScene = null)
     {
-        $this->setNom($nom);
-        $this->setIdScene($idScene);
+        if ($nom !== null) $this->setNom($nom);
+        if ($idScene !== null) $this->setIdScene($idScene);
     }
 
     public function setNom(string $nom)
