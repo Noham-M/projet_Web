@@ -1,17 +1,23 @@
 <?php
 include_once "app/Model/prestation.php";
+include_once "app/Model/Heure.php";
+
+$selectedScene = isset($_GET['Joueur']) && $_GET['Joueur'] !== '' ? intval($_GET['Joueur']) : null;
+$selectedHeure = isset($_GET['Creneau']) && $_GET['Creneau'] !== '' ? intval($_GET['Creneau']) : null;
+$programmed = isset($_GET['prograpresta']);
+
 $exemplePresta = [];
+$players = [];
+$heures = [];
 $erreur = '';
 
 try {
-    $exemplePresta = Prestation::findAll();
+    $exemplePresta = Prestation::findAll($selectedScene, $selectedHeure, $programmed);
+    $players = Joueur::findAll();
+    $heures = Heure::findAll();
 } catch(PDOException $e) {
     $erreur = "Erreur : " . $e->getMessage();
 }
-if ($_SERVER['REQUEST_METHOD'] === "GET") {
-    $actual = $_GET['Lieu'] ?? "";
-}
-
 
 ?>
 <!DOCTYPE html>
@@ -36,29 +42,30 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
             <fieldset>
                 <legend>Filtrer les activités</legend>
                 <div class="filterGroup">
-                    <label for="Lieu">Choisissez une scène</label>
-                    <select name="Lieu" id="Lieu">
-                        <option value="">Toutes les scènes</option>
-                        <option value="valorant">Scène Valorant</option>
-                        <option value="csgo">Scène Counter-Strike</option>
-                        <option value="Zen">Espace détente</option>
-                        <option value="Overwatch">Scène Overwatch</option>
+                    <label for="Joueur">Choisissez un joueur</label>
+                    <select name="Joueur" id="Joueur">
+                        <option value="">Tous les joueurs</option>
+                        <?php foreach ($players as $player) { ?>
+                            <option value="<?php echo $player->getIdJoueur(); ?>" <?php echo $player->getIdJoueur() === $selectedScene ? 'selected' : ''; ?>>
+                                <?php echo $player->getPseudo(); ?>
+                            </option>
+                        <?php } ?>
                     </select>
                 </div>
                 <div class="filterGroup">
                     <label for="Creneau">Choisissez une heure</label>
                     <select name="Creneau" id="Creneau">
                         <option value="">Toutes les heures</option>
-                        <option value="8h">8h-10h</option>
-                        <option value="10h">10h-12h</option>
-                        <option value="12h">12h-13h</option>
-                        <option value="13h">13h-15h</option>
-                        <option value="15h">15h-18h</option>
+                        <?php foreach ($heures as $heure) { ?>
+                            <option value="<?php echo $heure->getIdHeure(); ?>" <?php echo $heure->getIdHeure() === $selectedHeure ? 'selected' : ''; ?>>
+                                <?php echo $heure->toString(); ?>
+                            </option>
+                        <?php } ?>
                     </select>
                 </div>
                 <div class="filterGroup">
                     <label for="prograPresta">Afficher prestation programmé</label>
-                    <input type="checkbox" id="prograPresta" name="prograpresta" value="1"> 
+                    <input type="checkbox" id="prograPresta" name="prograpresta" value="1" <?php echo $programmed ? 'checked' : ''; ?>> 
                 </div>
 
                 <button type="submit">Rechercher</button>
@@ -68,18 +75,14 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
         <div class="ListeVignette">
             <?php
             foreach ($exemplePresta as $value) {
-                if (isset($_GET['prograpresta']) && ($value->getIdHeure() === null || $value->getIdHeure() == 0)) {
-                    continue;
-                }
-                $Scene = $value->findScene($value->getidScene());
+                $Player = $value->findJoueur($value->getIdJoueur());
+                $playerName = $Player ? $Player->getPseudo() : 'Joueur inconnu';
                 echo "<a href='prestationEx.php?id=" . $value->getIdPrestation() . "' class='vignette'>
                 <img src='assets/img/". $value->getImage() . "'alt='photo de la prestation'>
                 <h3>" . $value->getTitre() . "</h3>
-                <p><strong>Scène : </strong>" . $Scene->getnom() . "</p>
+                <p><strong>Joueur : </strong>" . $playerName . "</p>
                 <p>" . $value->getDescription() . "</p>
                 </a>";
-
-
             } ?>
         </div>
     </main>

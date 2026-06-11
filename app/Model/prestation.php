@@ -3,15 +3,15 @@ require_once __DIR__ . "/../database/database.php";
 require_once "Scene.php";
 class Prestation
 {
-    private int $idPrestation;
-    private string $titre;
-    private string $description;
-    private string $image;
-    private int $idScene;
-    private int $idJoueur;
-    private int $idHeure;
+    private ?int $idPrestation = null;
+    private ?string $titre = null;
+    private ?string $description = null;
+    private ?string $image = null;
+    private ?int $idScene = null;
+    private ?int $idJoueur = null;
+    private ?int $idHeure = null;
 
-    public function __construct(?int $idPrestation = null,?int $idScene = null,?int $idJoueur = null, ?int $idHeure = null, ?String $titre = null, ?string $description = null, ?string $image = null)
+    public function __construct(?int $idPrestation = null, ?int $idScene = null, ?int $idJoueur = null, ?int $idHeure = null, ?string $titre = null, ?string $description = null, ?string $image = null)
     {   
         if ($idPrestation !== null) $this->setIdPrestation($idPrestation);
         if ($titre !== null) $this->setTitre($titre);
@@ -81,26 +81,52 @@ class Prestation
         return $this->image;
     }
 
-    public function getIdPrestation(): int
+    public function getIdPrestation(): ?int
     {
         return $this->idPrestation;
     }
-     public function getIdScene(): int
+     public function getIdScene(): ?int
     {
         return $this->idScene;
     }
-     public function getIdJoueur(): int
+     public function getIdJoueur(): ?int
     {
         return $this->idJoueur;
     }
-     public function getIdHeure(): int
+     public function getIdHeure(): ?int
     {
         return $this->idHeure;
     }
 
-    public static function findAll() {
+    public static function findAll(?int $idScene = null, ?int $idHeure = null, bool $programmed = false) {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("SELECT * from prestation order by idPrestation desc");
+        $sql = "SELECT * FROM prestation";
+        $conditions = [];
+
+        if ($idScene !== null) {
+            $conditions[] = "idScene = :idScene";
+        }
+        if ($idHeure !== null) {
+            $conditions[] = "idHeure = :idHeure";
+        }
+        if ($programmed) {
+            $conditions[] = "idHeure IS NOT NULL AND idHeure <> 0";
+        }
+
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $sql .= " ORDER BY idPrestation DESC";
+
+        $requete = $pdo->prepare($sql);
+        if ($idScene !== null) {
+            $requete->bindValue(':idScene', $idScene, PDO::PARAM_INT);
+        }
+        if ($idHeure !== null) {
+            $requete->bindValue(':idHeure', $idHeure, PDO::PARAM_INT);
+        }
+
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS, Prestation::class);
         return $requete->fetchAll();

@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 <button type="submit">Envoyer</button>
                 <div>
                 <a id="inscription" href="inscription.php">Vous n'avez pas de compte ?</a>
-                <a id="OubliMdp"href="#">mot de passe oublié ?</a>
+                <a id="inscription" href="changementMdp.php">mot de passe oublié ?</a>
                 </div>
             </fieldset>
         </form>

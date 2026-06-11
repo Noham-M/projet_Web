@@ -1,3 +1,4 @@
+  
 
 --
 -- Base de données : `projet-web`
@@ -80,7 +81,8 @@ INSERT INTO `prestation` (`idPrestation`, `titre`, `description`, `image`, `idSc
 (4, 'lucio parcours', 'petit concours de parcours pendant la pause de midi', 'video-games-1557358_1280.jpg', 3, 6, 3),
 (5, 'counter-strike tournament', 'gros tournoi du soir avec le grand joueur ThéoryCraft', 'video-games-1557358_1280.jpg', 2, 7, 5),
 (6, 'présentation héro', 'présentation nouveau héros', 'video-games-1557358_1280.jpg', 2, 1, 4),
-(7, 'tournoi valorant', 'gros tournoi valorant', 'video-games-1557358_1280.jpg', 1, 1, 5);
+(7, 'tournoi valorant', 'gros tournoi valorant', 'video-games-1557358_1280.jpg', 1, 1, 5),
+(8, '1v1 valo', 'petit tournoi valorant avec cashprize en 1v1', 'video-games-1557358_1280.jpg', 1, 5, NULL);
 
 -- --------------------------------------------------------
 

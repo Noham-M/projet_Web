@@ -1,8 +1,8 @@
 <?php
 class Heure {
-    private int $idHeure;
-    private int $Heure1;
-    private int $Heure2;
+    private ?int $idHeure = null;
+    private ?int $Heure1 = null;
+    private ?int $Heure2 = null;
 
     public function __construct(?int $idHeure = null) {
         if ($idHeure !== null) $this->setHeures($idHeure);
@@ -12,6 +12,7 @@ class Heure {
         if ($idHeure < 1 || $idHeure > 5) {
             throw new InvalidArgumentException("la variable heure1 ne peut que être comprise entre 1 et 5");
         }
+        $this->idHeure = $idHeure;
         switch ($idHeure) {
             case 1: 
                 $this->Heure1 = 8;
