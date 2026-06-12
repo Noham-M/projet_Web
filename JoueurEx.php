@@ -4,6 +4,7 @@ require_once "app/Model/prestation.php";
 
 $joueurSelectionne = null;
 $prestations = [];
+$utilisateur = null;
 $erreur = "";
 $cpt = 1;
 
@@ -13,8 +14,9 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     try {
         
         $joueurSelectionne = Joueur::findById($id);
+        $utilisateur = $joueurSelectionne ? $joueurSelectionne->getUtilisateur() : null;
         
-        if (!$joueurSelectionne) {
+        if (!$joueurSelectionne || !$utilisateur) {
             $erreur = "Ce joueur n'existe pas.";
         }
     } catch (PDOException $e) {
@@ -48,11 +50,15 @@ try {
         <article id='presentation' class='exemple'>
         <img src='assets/img/" . $joueurSelectionne->getImage() . "' alt='Photo'>
         <div id='biographie'>
+        <h3>Nom : " . $utilisateur->getNom() . " " . $utilisateur->getPrenom() . "</h3>
         <p>" . $joueurSelectionne->getDescription() . "</p>";
+        echo "<div><h3>Prestations :</h3>";
         foreach ($prestations as $presta) {
-            echo " <a href='prestationEx.php'>prestation " . $cpt . " : " . $presta->getTitre() . "</a>";
+            echo " <a href='prestationEx.php?id=" . $presta->getIdPrestation() . "'>prestation " . $cpt . " : " . $presta->getTitre() . "</a><br>";
             $cpt++;
         }
+        echo "</div></div></article>";
+    } else {    
         echo "</div>
         </article>";
     }?>

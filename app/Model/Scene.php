@@ -39,7 +39,7 @@ class Scene
     public static function findAll()
     {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("SELECT * FROM Scene ORDER BY nom");
+        $requete = $pdo->prepare("SELECT * FROM Scene ORDER BY idScene ASC");
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS, Scene::class);
         return $requete->fetchAll();

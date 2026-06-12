@@ -53,7 +53,7 @@ class Heure {
 
     public static function findAll() {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("SELECT * from heure order by idHeure desc");
+        $requete = $pdo->prepare("SELECT * from heure order by idHeure asc");
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS, Heure::class);
         return $requete->fetchAll();

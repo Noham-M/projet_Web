@@ -25,7 +25,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         $erreur = "Erreur de base de données : " . $e->getMessage();
     }
 } else {
-    $erreur = "Aucun joueur n'a été sélectionné.";
+    $erreur = "Aucune prestation n'a été sélectionnée.";
 }
 $programme = (!$Heure || !$Scene)? false :true;
 ?>
@@ -54,8 +54,10 @@ $programme = (!$Heure || !$Scene)? false :true;
             <section id='descripTournoi'>
                 <h2>" . $prestation->getTitre() . "</h2>";
                 if ($programme) {
-                echo "<h3>heure : " . $Heure->toString() . "</h3>
-                <h3>scène : " . $Scene->getNom() . "</h3>";
+                    echo "<h3>heure : " . $Heure->toString() . "</h3>
+                    <h3>scène : " . $Scene->getNom() . "</h3>";
+                } else {
+                    echo "<h3>Prestation non programmée</h3>";
                 }
                 echo "<h3><a href='JoueurEx.php?id=" . $Joueur->getIdJoueur() . "'>Joueur : " . $Joueur->getPseudo() . "</a></h3> 
                 <p>déscription : " . $prestation->getDescription() . "</p>

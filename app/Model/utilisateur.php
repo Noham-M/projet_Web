@@ -4,43 +4,49 @@ class Utilisateur
     private int $idUser;
     private string $nom;
     private string $prenom;
-    private string $Email;
-    private string $passWord;
+    private string $email;
+    private string $password;
    
 
-    public function __construct(int $idUser, string $nom, string $prenom, string $Email, string $password)
-    {   $this->setidUser($idUser);
-        $this->setNom($nom);
-        $this->setPassWord($password);
-        $this->setPrenom($prenom);
-        $this->setEmail($Email);
+    public function __construct(?int $idUser = null, ?string $nom = null, ?string $prenom = null, ?string $email = null, ?string $password = null)
+    {
+        if ($idUser !== null) $this->setIdUser($idUser);
+        if ($nom !== null) $this->setNom($nom);
+        if ($prenom !== null) $this->setPrenom($prenom);
+        if ($email !== null) $this->setEmail($email);
+        if ($password !== null) $this->setPassword($password);
     }
-    public function setidUser(String $idUser) {
-        if($idUser < 0 ) {
+
+    public function setIdUser(int $idUser)
+    {
+        if ($idUser < 0) {
             throw new InvalidArgumentException("l'id ne peut pas être inférieur à 0");
         }
-        $this->idUser;
+        $this->idUser = $idUser;
     }
-    public function setPassWord(String $passWord)
+
+    public function setPassword(string $password)
     {
-        if (empty($passWord)) {
+        if (empty($password)) {
             throw new InvalidArgumentException("le mdp ne peut pas être null ou vide");
         }
-        $this->passWord = $passWord;
+        $this->password = $password;
     }
-    public function setPrenom(String $prenom)
+
+    public function setPrenom(string $prenom)
     {
         if (empty($prenom)) {
             throw new InvalidArgumentException("le prenom ne peut pas être null ou vide");
         }
         $this->prenom = $prenom;
     }
-    public function setEmail(String $Email)
+
+    public function setEmail(string $email)
     {
-        if (empty($Email)) {
+        if (empty($email)) {
             throw new InvalidArgumentException("l'email ne peut pas être null ou vide");
         }
-        $this->Email = $Email;
+        $this->email = $email;
     }
 
     public function setNom(string $nom)
@@ -51,30 +57,37 @@ class Utilisateur
         $this->nom = $nom;
     }
 
-    public function getName(): string
+    public function getNom(): string
     {
         return $this->nom;
     }
-     public function getPrenom(): string
+
+    public function getPrenom(): string
     {
         return $this->prenom;
     }
+
     public function getEmail(): string
     {
-        return $this->Email;
+        return $this->email;
     }
-    public function getPassWord(): string
+
+    public function getPassword(): string
     {
-        return $this->passWord;
+        return $this->password;
     }
 
     public function getIdUser(): int {
         return $this->idUser;
     }
 
+    public function getIdUtilisateur(): int {
+        return $this->getIdUser();
+    }
+
     public static function findAll() {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("SELECT * from utilisateur order by idUtilisateur desc");
+        $requete = $pdo->prepare("SELECT idUser AS idUser, nom, prenom, motDePasse AS password, Email AS email FROM utilisateur ORDER BY idUser DESC");
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS, Utilisateur::class);
         return $requete->fetchAll();
@@ -82,7 +95,7 @@ class Utilisateur
     
     public static function findById(int $id) {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("Select * from Utilisateur where idUtilisateur = :id");
+        $requete = $pdo->prepare("SELECT idUser AS idUser, nom, prenom, motDePasse AS password, Email AS email FROM utilisateur WHERE idUser = :id");
         $requete->bindValue(':id',$id,PDO::PARAM_INT);
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS, Utilisateur::class);

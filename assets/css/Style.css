@@ -375,6 +375,11 @@ article.exemple a:hover {
 span {
     color: red;
 }
+#biographie a {
+    padding: 0.5rem;
+    margin: 1rem;
+  
+}
 
 
 

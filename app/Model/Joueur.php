@@ -88,9 +88,13 @@ class Joueur
         return $this->idJoueur;
     }
 
-    public static function findAll() {
+    public static function findAll(?bool $programmed = false): array {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("SELECT * from joueur order by idJoueur desc");
+        $sql = "SELECT * FROM joueur";
+        if ($programmed) {
+            $sql .= " WHERE idJoueur IN (SELECT DISTINCT idJoueur FROM prestation WHERE idScene IS NOT NULL AND idheure IS NOT NULL)";
+        }
+        $requete = $pdo->prepare($sql);
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS, Joueur::class);
         return $requete->fetchAll();
@@ -107,11 +111,24 @@ class Joueur
 
     public function getPrestations() {
          $pdo = Database::getPDO();
-        $requete = $pdo->prepare("Select * from prestation where idJoueur = :id");
+        $requete = $pdo->prepare("SELECT idPrestation AS idPrestation, idScene AS idScene, idJoueur AS idJoueur, idheure AS idHeure, titre AS titre, description AS description, image AS image FROM prestation WHERE idJoueur = :id");
         $requete->bindValue(':id',$this->getIdJoueur(),PDO::PARAM_INT);
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS,Prestation::class);
         return $requete->fetchAll() ;
     } 
+
+    public function findUtilisateur(int $idUtilisateur) {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("SELECT idUser AS idUser, nom, prenom, motDePasse AS password, Email AS email FROM utilisateur WHERE idUser = :id");
+        $requete->bindValue(':id', $idUtilisateur, PDO::PARAM_INT);
+        $requete->execute();
+        $requete->setFetchMode(PDO::FETCH_CLASS, Utilisateur::class);
+        return $requete->fetch() ?: null;
+    }
+
+    public function getUtilisateur(): ?Utilisateur {
+        return $this->idUtilisateur ? $this->findUtilisateur($this->idUtilisateur) : null;
+    }
 }
 ?>

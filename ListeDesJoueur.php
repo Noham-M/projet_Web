@@ -1,9 +1,10 @@
 <?php
 require_once "app/Model/Joueur.php";
+$programmed = isset($_GET['prograArtiste']);
 $Joueurs = [];
 $erreur = '';
 try {
-    $Joueurs = Joueur::findAll();
+    $Joueurs = Joueur::findAll($programmed);
 } catch (PDOException $e) {
     $erreur = "Erreur : " . $e->getMessage();
 }
@@ -27,33 +28,10 @@ try {
     <main>
         <h2>Liste des joueurs</h2>
         <form action="ListeDesJoueur.php" method="GET" class="filter">
-
             <fieldset>
-                <legend>Filtrer les participants</legend>
-                <div class="filterGroup">
-                    <label for="scene">Choisissez une scène</label>
-                    <select name="scene" id="scene">
-                        <option value="">Toutes les scènes</option>
-                        <option value="valorant">Scène Valorant</option>
-                        <option value="csgo">Scène Counter-Strike</option>
-                        <option value="Zen">Espace détente</option>
-                        <option value="Overwatch">Scène Overwatch</option>
-                    </select>
-                </div>
-                <div class="filterGroup">
-                    <label for="Heure">Choisissez une heure</label>
-                    <select name="Heure" id="Heure">
-                        <option value="">Toutes les heures</option>
-                        <option value="8h">8h-10h</option>
-                        <option value="10h">10h-12h</option>
-                        <option value="12h">12h-13h</option>
-                        <option value="13h">13h-15h</option>
-                        <option value="15h">15h-18h</option>
-                    </select>
-                </div>
                 <div class="filterGroup">
                     <label for="prograPresta">Afficher artiste programmé</label>
-                    <input type="checkbox" id="prograPresta">
+                    <input type="checkbox" id="prograPresta" name="prograArtiste" value="1" <?php echo $programmed ? 'checked' : ''; ?>>
                 </div>
                 <button type="submit" id="bouttonFiltre">Rechercher</button>
 
@@ -64,12 +42,26 @@ try {
             <?php
             if ($erreur) {
                 echo "<span> $erreur <span>";
+            } elseif(empty($Joueurs)) {
+                echo "<p>Aucun joueur ne correspond à votre recherche.</p>";
             } else {
                 foreach ($Joueurs as $value) {
                 echo "<a href='JoueurEx.php?id=" . $value->getIdJoueur() . "' class='vignette'>
                 <img src='" . "assets/img/" . $value->getImage() . "' alt='portrait du joueur'>
-                <h3>" . $value->getPseudo() . "</h3>
-                <p>" . $value->getDescription() . "</p>
+                <h3>" . $value->getPseudo() . "</h3>";
+                if (!$value->getPrestations()) {
+                    echo "<p>Aucune prestation programmée</p>";
+                }
+                foreach ($value->getPrestations() as $presta) {
+                    $scene = $presta->findScene($presta->getIdScene());
+                    $heure = $presta->findHeure($presta->getIdHeure());
+                    if ($scene && $heure) {
+                        echo "<p>" . $scene->getNom() . " à " . $heure->toString() . "</p>";
+                    } else {
+                        echo "<p>Prestation non programmée</p>";
+                    }
+                }
+                echo "<p>" . $value->getDescription() . "</p>
                 </a>";
                 }
             }
