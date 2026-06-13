@@ -1,34 +1,74 @@
 <?php
+require_once __DIR__ . "/app/Model/utilisateur.php";
+require_once __DIR__ . "/app/Model/Joueur.php";
 $error = [];
 
-$success = null;
+$Nom = '';
+$Prenom = '';
+$Email = '';
+$Pseudo = '';
+$Description = '';
+$Photo = '';
 
-$Utilisateur = null;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $Nom = $_POST['user_name'] ?? "";
+    $Nom = trim($_POST['user_name'] ?? "");
     if (empty($Nom)) {
-        $error['nom'] = "le nom est obligatoire";
+        $error['nom'] = "Le nom est obligatoire.";
     }
-    $Prenom = $_POST['user_surname'] ?? "";
+
+    $Prenom = trim($_POST['user_surname'] ?? "");
     if (empty($Prenom)) {
-        $error['prenom'] = "le prénom est obligatoire";
+        $error['prenom'] = "Le prénom est obligatoire.";
     }
-    $Email = $_POST['user_email'] ?? "";
+
+    $Pseudo = trim($_POST['user_pseudo'] ?? "");
+    if (empty($Pseudo)) {
+        $error['pseudo'] = "Le pseudo est obligatoire.";
+    }
+
+    $Email = trim($_POST['user_email'] ?? "");
     if (!filter_var($Email, FILTER_VALIDATE_EMAIL)) {
-        $error['Email'] = "l'email n'est pas valide";
+        $error['Email'] = "L'email n'est pas valide.";
+    } elseif (Utilisateur::findByEmail($Email)) {
+        $error['Email'] = "Cet email est déjà utilisé.";
     }
+
+    $Description = trim($_POST['user_description'] ?? "");
+    if (empty($Description)) {
+        $error['description'] = "La description est obligatoire.";
+    }
+
+    $Photo = trim($_POST['user_photo'] ?? "");
+    if (empty($Photo)) {
+        $error['photo'] = "Le nom du fichier photo est obligatoire.";
+    }
+
     $Password = $_POST['user_password'] ?? "";
     if (empty($Password)) {
-        $error['password'] = "Le mot de passe est obligatoire";
-    }
-    $passwordConfirm = $_POST['user_password_confirm'] ?? "";
-     if ($passwordConfirm != $Password) {
-        $error['passwordconfirm'] = "la confirmation ne correspond pas au mot de passe";
-     }
-    if (empty($error)) {
-        $success = true;
+        $error['password'] = "Le mot de passe est obligatoire.";
     }
 
+    $passwordConfirm = $_POST['user_password_confirm'] ?? "";
+    if ($passwordConfirm !== $Password) {
+        $error['passwordconfirm'] = "La confirmation ne correspond pas au mot de passe.";
+    }
+
+    if (empty($error)) {
+        $utilisateur = new Utilisateur(null, $Nom, $Prenom, $Email, $Password);
+        if ($utilisateur->create()) {
+            $joueur = new Joueur(null, $Photo, $Pseudo, $Description, $utilisateur->getIdUser());
+            if ($joueur->create()) {
+                session_start();
+                $_SESSION['user_id'] = $utilisateur->getIdUser();
+                $_SESSION['user_email'] = $utilisateur->getEmail();
+                header("Location: tableauDeBord.php");
+                exit();
+            }
+            $error['db'] = "Impossible de créer le profil joueur.";
+        } else {
+            $error['db'] = "Impossible de créer l'utilisateur.";
+        }
+    }
 }
 
 
@@ -50,14 +90,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ?>
 
                 <label for="surname">Prénom :</label>
-                <input type="text" id="surname" name="user_surname" placeholder="Votre prénom..." required>
+                <input type="text" id="surname" name="user_surname" placeholder="Votre prénom..." value="<?php echo htmlspecialchars($Prenom); ?>" required>
                  <?php if (isset($error['prenom'])) {
                         echo "<span>" . $error['prenom'] . "</span><br>";
                 }
                 ?>
 
+                <label for="pseudo">Pseudo :</label>
+                <input type="text" id="pseudo" name="user_pseudo" placeholder="Votre pseudo..." value="<?php echo htmlspecialchars($Pseudo); ?>" required>
+                 <?php if (isset($error['pseudo'])) {
+                        echo "<span>" . $error['pseudo'] . "</span><br>";
+                }
+                ?>
+
+                <label for="message">Description :</label>
+                <textarea id="message" name="user_description" placeholder="Parlez un peu de vous..." required><?php echo htmlspecialchars($Description); ?></textarea>
+                 <?php if (isset($error['description'])) {
+                        echo "<span>" . $error['description'] . "</span><br>";
+                }
+                ?>
+
+                <label for="photo">Photo :</label>
+                <input type="file" id="photo" name="user_photo"  accept="image/png, image/jpg" required>
+                 <?php if (isset($error['photo'])) {
+                        echo "<span>" . $error['photo'] . "</span><br>";
+                }
+                ?>
+
                 <label for="email">E-mail :</label>
-                <input type="email" id="email" name="user_email" placeholder="Votre adresse mail" required>
+                <input type="email" id="email" name="user_email" placeholder="Votre adresse mail" value="<?php echo htmlspecialchars($Email); ?>" required>
                <?php if (isset($error['Email'])) {
                         echo "<span>" . $error['Email'] . "</span><br>";
                 }
@@ -78,13 +139,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ?>
 
                 <button type="submit">Envoyer</button>
+                <?php if (isset($error['db'])) {
+                    echo "<p>" . htmlspecialchars($error['db']) . "</p>";
+                } ?>
             </fieldset>
         </form>
-        <?php
-        if ($success) {
-            echo "<div class='pop-up'>vous êtes connecté</div>";
-        }
-        ?>
 
     </main>
     <?php

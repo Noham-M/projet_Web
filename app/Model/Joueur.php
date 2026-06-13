@@ -1,6 +1,6 @@
 <?php
-require_once "utilisateur.php";
-require_once "prestation.php";
+require_once __DIR__ . "/utilisateur.php";
+require_once __DIR__ . "/prestation.php";
 require_once __DIR__ . "/../database/database.php";
 
 class Joueur 
@@ -27,16 +27,16 @@ class Joueur
         if ($idUtilisateur !== null) $this->setIdUtilisateur($idUtilisateur);
     }
 
-    public function setIdJoueur(String $idJoueur) {
-        if (empty($idJoueur)) {
-            throw new invalidArgumentException("l'id ne peut pas être null");
+    public function setIdJoueur(int $idJoueur) {
+        if ($idJoueur <= 0) {
+            throw new InvalidArgumentException("L'id ne peut pas être inférieur ou égal à 0");
         }
         $this->idJoueur = $idJoueur;
     }
 
-    public function setIdUtilisateur(String $idUtilisateur) {
-        if (empty($idUtilisateur)) {
-            throw new invalidArgumentException("l'id ne peut pas être null");
+    public function setIdUtilisateur(int $idUtilisateur) {
+        if ($idUtilisateur <= 0) {
+            throw new InvalidArgumentException("L'id utilisateur ne peut pas être inférieur ou égal à 0");
         }
         $this->idUtilisateur = $idUtilisateur;
     }
@@ -117,6 +117,27 @@ class Joueur
         $requete->setFetchMode(PDO::FETCH_CLASS,Prestation::class);
         return $requete->fetchAll() ;
     } 
+
+    public function create(): bool {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("SELECT MAX(idJoueur) AS maxId FROM joueur");
+        $requete->execute();
+        $maxId = $requete->fetchColumn();
+        $newId = $maxId !== false ? ((int)$maxId + 1) : 1;
+
+        $requete = $pdo->prepare("INSERT INTO joueur (idJoueur, pseudo, photo, description, idUtilisateur) VALUES (:idJoueur, :pseudo, :photo, :description, :idUtilisateur)");
+        $requete->bindValue(':idJoueur', $newId, PDO::PARAM_INT);
+        $requete->bindValue(':pseudo', $this->getPseudo(), PDO::PARAM_STR);
+        $requete->bindValue(':photo', $this->getImage(), PDO::PARAM_STR);
+        $requete->bindValue(':description', $this->getDescription(), PDO::PARAM_STR);
+        $requete->bindValue(':idUtilisateur', $this->getIdUtilisateur(), PDO::PARAM_INT);
+
+        if ($requete->execute()) {
+            $this->setIdJoueur($newId);
+            return true;
+        }
+        return false;
+    }
 
     public function findUtilisateur(int $idUtilisateur) {
         $pdo = Database::getPDO();

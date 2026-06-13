@@ -8,7 +8,10 @@
 </head>
 <body>
 <?php require_once "app/view/header.php";?>
-
+<main>
+    <h2>Page de l'organisateur</h2>
+    <p>Bienvenue sur la page de l'organisateur !</p>
+</main>
 <?php require_once "app/view/footer.php";?>
 </body>
 </html>

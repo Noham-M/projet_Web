@@ -22,7 +22,7 @@ foreach ($prestations as $prestation) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Journ�e Tournoi LAN jeux-vid�o</title>
+    <title>Journée Tournoi LAN jeux-vidéo</title>
     <link rel="stylesheet" href="assets/css/Style.css">
 </head>
 
@@ -31,14 +31,14 @@ foreach ($prestations as $prestation) {
     <main>
         <article id="presentationEvenement">
             <div id="h2EtPresentation">
-                <h2>Br�ve description de l'�v�nement</h2>
-                <p>Chaque ann�e, un nombre incalculable de jeunes talents cherchent � se faire conna�tre sur la sc�ne
+                <h2>Brève description de l'événement</h2>
+                <p>Chaque année, un nombre incalculable de jeunes talents cherchent à se faire connaître sur la scène
                     e-sport.
-                    Ce tournoi leur sert donc de tremplin pour leur future carri�re.
-                    N'h�sitez pas � venir soutenir les joueurs pr�sents sur place.
+                    Ce tournoi leur sert donc de tremplin pour leur future carrière.
+                    N'hésitez pas à venir soutenir les joueurs présents sur place.
                 </p>
             </div>
-            <img src="assets/img/OIP.png" alt="Aper�u du tournoi e-sport">
+            <img src="assets/img/OIP.png" alt="Aperçu du tournoi e-sport">
         </article>
         <table>
             <caption>Programme des prestations</caption>
