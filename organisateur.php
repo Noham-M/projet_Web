@@ -10,7 +10,9 @@
 <?php require_once "app/view/header.php";?>
 <main>
     <h2>Page de l'organisateur</h2>
-    <p>Bienvenue sur la page de l'organisateur !</p>
+    <p>Bienvenue sur la page de l'organisateur ! vous trouverez ici les informations et les outils nécessaires pour gérer le tournoi.</p>
+
+
 </main>
 <?php require_once "app/view/footer.php";?>
 </body>

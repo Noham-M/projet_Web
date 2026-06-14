@@ -1,32 +1,39 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . "/../Model/utilisateur.php";
 $pageActuelle = basename($_SERVER['PHP_SELF']);
 
 $actualUser = null;
+$isAdmin = false;
 if (!empty($_SESSION['user_email'])) {
     $actualUser = Utilisateur::findByEmail($_SESSION['user_email']);
+    if ($actualUser) {
+        $admins = Utilisateur::getAdmins();
+        foreach ($admins as $admin) {
+            if ($admin->getEmail() === $actualUser->getEmail()) {
+                $isAdmin = true;
+                break;
+            }
+        }
+    }
 }
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Journée Tournoi LAN jeux-vidéo</title>
-    <link rel="stylesheet" href="assets/css/Style.css">
-</head>
-
-<body>
-    <header>
+<header>
         <section id="Titre">
             <img src="assets/img/question-svgrepo-com.svg" alt="Logo de l'événement">
             <h1>Journée tournoi LAN jeux-vidéo</h1>
             <div class="headerconnect">
-                <a class="SeConnecter" href="connexion.php"><?php echo isset($_SESSION['user_email']) && $actualUser ? $actualUser->getNom() . ' ' . $actualUser->getPrenom() : 'Se connecter'; ?></a>
                 <?php if (!empty($_SESSION['user_email']) && $actualUser) : ?>
+                    <?php if ($isAdmin) : ?>
+                        <a class="SeConnecter" href="organisateur.php">Organisateur</a>
+                    <?php else: ?>
+                        <a class="SeConnecter" href="tableauDeBord.php">Tableau de bord</a>
+                    <?php endif; ?>
                     <a class="Deconnexion" href="deconnexion.php">Déconnexion</a>
+                <?php else: ?>
+                    <a class="SeConnecter" href="connexion.php">Se connecter</a>
                 <?php endif; ?>
             </div>
         </section>

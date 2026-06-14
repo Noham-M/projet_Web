@@ -151,5 +151,17 @@ class Joueur
     public function getUtilisateur(): ?Utilisateur {
         return $this->idUtilisateur ? $this->findUtilisateur($this->idUtilisateur) : null;
     }
+
+    public function update(): bool {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("UPDATE joueur SET pseudo = :pseudo, photo = :photo, description = :description WHERE idJoueur = :id");
+        $requete->bindValue(':pseudo', $this->getPseudo(), PDO::PARAM_STR);
+        $requete->bindValue(':photo', $this->getImage(), PDO::PARAM_STR);
+        $requete->bindValue(':description', $this->getDescription(), PDO::PARAM_STR);
+        $requete->bindValue(':id', $this->getIdJoueur(), PDO::PARAM_INT);
+        return $requete->execute();
+    }
+
+    
 }
 ?>

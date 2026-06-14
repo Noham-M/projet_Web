@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . "/../database/database.php";
+require_once __DIR__ . "/Joueur.php";
 class Utilisateur
 {
     private int $idUser;
@@ -139,5 +140,27 @@ class Utilisateur
             return true;
         }
         return false;
+    }
+
+    public function getJoueur(): ?Joueur
+    {
+       $pdo = Database::getPDO();
+        $requete = $pdo->prepare("SELECT idJoueur AS idJoueur, pseudo, photo, description, idUtilisateur FROM joueur WHERE idUtilisateur = :id");
+        $requete->bindValue(':id', $this->getIdUtilisateur(), PDO::PARAM_INT);
+        $requete->execute();
+        $requete->setFetchMode(PDO::FETCH_CLASS, Joueur::class);
+        return $requete->fetch() ?: null;
+    }
+
+    public function update(): bool
+    {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("UPDATE utilisateur SET nom = :nom, prenom = :prenom, motDePasse = :password, Email = :email WHERE idUser = :id");
+        $requete->bindValue(':nom', $this->getNom(), PDO::PARAM_STR);
+        $requete->bindValue(':prenom', $this->getPrenom(), PDO::PARAM_STR);
+        $requete->bindValue(':password', $this->getPassword(), PDO::PARAM_STR);
+        $requete->bindValue(':email', $this->getEmail(), PDO::PARAM_STR);
+        $requete->bindValue(':id', $this->getIdUser(), PDO::PARAM_INT);
+        return $requete->execute();
     }
 }
