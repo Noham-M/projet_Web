@@ -67,8 +67,12 @@ class Prestation
     }
     public function setImage(string $image)
     {
-        if (empty($image) || !str_starts_with($image, "assets/img/")) {
-            throw new InvalidArgumentException("l'image doit commencer par assets/img/ et ne doit pas être vide");
+        $image = trim($image);
+        if (empty($image)) {
+            throw new InvalidArgumentException("l'image ne peut pas être vide");
+        }
+        if (str_starts_with($image, "assets/img/")) {
+            $image = substr($image, strlen("assets/img/"));
         }
         $this->image = $image;
     }
@@ -142,17 +146,69 @@ class Prestation
     public static function findById(int $id)
     {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("SELECT idPrestation AS idPrestation, idScene AS idScene, idJoueur AS idJoueur, idheure AS idHeure, titre AS titre, description AS description, image AS image FROM Prestation WHERE idPrestation = :id");
+        $requete = $pdo->prepare("SELECT idPrestation AS idPrestation, idScene AS idScene, idJoueur AS idJoueur, idheure AS idHeure, titre AS titre, description AS description, image AS image FROM prestation WHERE idPrestation = :id");
         $requete->bindValue(':id', $id, PDO::PARAM_INT);
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS, Prestation::class);
         return $requete->fetch() ?: null;
     }
 
+    public static function deleteById(int $id): bool
+    {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("DELETE FROM prestation WHERE idPrestation = :id");
+        $requete->bindValue(':id', $id, PDO::PARAM_INT);
+        return $requete->execute();
+    }
+
+    public static function clearHeureById(int $id): bool
+    {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("UPDATE prestation SET idheure = NULL WHERE idPrestation = :id");
+        $requete->bindValue(':id', $id, PDO::PARAM_INT);
+        return $requete->execute();
+    }
+
+    public function create(): bool
+    {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("SELECT MAX(idPrestation) AS maxId FROM prestation");
+        $requete->execute();
+        $maxId = $requete->fetchColumn();
+        $newId = $maxId !== false ? ((int)$maxId + 1) : 1;
+
+        $requete = $pdo->prepare("INSERT INTO prestation (idPrestation, idScene, idJoueur, idheure, titre, description, image) VALUES (:idPrestation, :idScene, :idJoueur, :idHeure, :titre, :description, :image)");
+        $requete->bindValue(':idPrestation', $newId, PDO::PARAM_INT);
+        $requete->bindValue(':idScene', $this->getIdScene(), PDO::PARAM_INT);
+        $requete->bindValue(':idJoueur', $this->getIdJoueur(), PDO::PARAM_INT);
+        $requete->bindValue(':idHeure', $this->getIdHeure(), PDO::PARAM_INT);
+        $requete->bindValue(':titre', $this->getTitre(), PDO::PARAM_STR);
+        $requete->bindValue(':description', $this->getDescription(), PDO::PARAM_STR);
+        $requete->bindValue(':image', $this->getImage(), PDO::PARAM_STR);
+        if ($requete->execute()) {
+            $this->setIdPrestation($newId);
+            return true;
+        }
+        return false;
+    }
+
+    public function update(): bool
+    {
+        $pdo = Database::getPDO();
+        $requete = $pdo->prepare("UPDATE prestation SET idScene = :idScene, idheure = :idHeure, titre = :titre, description = :description, image = :image WHERE idPrestation = :idPrestation");
+        $requete->bindValue(':idScene', $this->getIdScene(), PDO::PARAM_INT);
+        $requete->bindValue(':idHeure', $this->getIdHeure(), PDO::PARAM_INT);
+        $requete->bindValue(':titre', $this->getTitre(), PDO::PARAM_STR);
+        $requete->bindValue(':description', $this->getDescription(), PDO::PARAM_STR);
+        $requete->bindValue(':image', $this->getImage(), PDO::PARAM_STR);
+        $requete->bindValue(':idPrestation', $this->getIdPrestation(), PDO::PARAM_INT);
+        return $requete->execute();
+    }
+
     public function findScene(int $id)
     {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("Select * from Scene where idScene = :id");
+        $requete = $pdo->prepare("SELECT * FROM scene WHERE idScene = :id");
         $requete->bindValue(':id', $id, PDO::PARAM_INT);
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS, Scene::class);
@@ -162,7 +218,7 @@ class Prestation
     public function findJoueur(int $id)
     {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("Select * from Joueur where idJoueur = :id");
+        $requete = $pdo->prepare("SELECT * FROM joueur WHERE idJoueur = :id");
         $requete->bindValue(':id', $id, PDO::PARAM_INT);
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS, Joueur::class);
@@ -172,7 +228,7 @@ class Prestation
     public function findHeure(?int $id = null)
     {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("Select * from Heure where idHeure = :id");
+        $requete = $pdo->prepare("SELECT * FROM heure WHERE idHeure = :id");
         $requete->bindValue(':id', $id, PDO::PARAM_INT);
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS, Heure::class);

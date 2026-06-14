@@ -38,31 +38,45 @@ a.SeConnecter {
     padding: 0.4rem 0.8rem;
 }
 
-a.Deconnexion {
+a.Deconnexion,
+button.delete-btn {
     display: inline-block;
-    margin-top: -0.5rem; 
-    padding: 0.4rem 0.8rem;
+    margin: 0;                        
+    padding: 0.1rem 0.8rem;            
     position: relative;
-    z-index: 1; 
+    z-index: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    font: inherit;
+    cursor: pointer;
+    text-align: right;                
 }
 
 a.SeConnecter:hover,
-a.Deconnexion:hover {
+a.Deconnexion:hover,
+button.delete-btn:hover {
     transform: scale(1.1);
 }
 
 #Titre {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
+}
+
+#Titre img {
+    width: 5%;
 }
 
 .headerconnect {
     display: flex;
     flex-direction: column;
-    align-items: flex-end; 
-    gap: 0.3rem;           
+    align-items: flex-end;
+    gap: 0;
 }
+
+
 
 
 #Titre p {
@@ -412,6 +426,81 @@ span {
     transform: scale(1.1);
     box-shadow: #79CFD9 0 0 20px;
 }
+.ModifPrestaVignette {
+    width: 30%;
+    border: #79CFD9 solid 2px;
+    border-radius: 15px;
+    background-color: #1C4859;
+    transition: 0.3s ease;
+}
+.ModifPrestaVignette img {
+    border-radius: 15px 15px 0 0;
+    width: 100%;
+    height: 50%;
+
+}
+
+.prestationActions form {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+ button.delete-btn {
+    display: inline-block;
+    color: white;
+    border: none;
+    background: transparent;
+    padding: 0.4rem 0.8rem;
+    margin: 0;
+    font: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: none;
+}
+
+ button.delete-btn:hover {
+    transform: scale(1.1);
+}
+
+.programme-cell form {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.orgaLien {
+    text-decoration: underline;
+    transition: 0.3s ease;
+}
+
+.orgaLien:hover {
+    text-decoration: underline;
+    color: #79CFD9;
+    cursor: pointer;
+}
+
+.admin-modif-form {
+    width: 80%;
+}
+
+.admin-modif-section {
+    display: flex;
+    width: 80%;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+
+
+
 
 
 

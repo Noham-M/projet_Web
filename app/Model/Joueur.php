@@ -102,7 +102,7 @@ class Joueur
     
     public static function findById(int $id) {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("Select * from Joueur where idJoueur = :id");
+        $requete = $pdo->prepare("SELECT * FROM joueur WHERE idJoueur = :id");
         $requete->bindValue(':id',$id,PDO::PARAM_INT);
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS,Joueur::class);
@@ -117,6 +117,28 @@ class Joueur
         $requete->setFetchMode(PDO::FETCH_CLASS,Prestation::class);
         return $requete->fetchAll() ;
     } 
+
+    public static function deleteWithPrestations(int $id): bool {
+        $pdo = Database::getPDO();
+        try {
+            $pdo->beginTransaction();
+            $requete = $pdo->prepare("DELETE FROM prestation WHERE idJoueur = :id");
+            $requete->bindValue(':id', $id, PDO::PARAM_INT);
+            $requete->execute();
+
+            $requete = $pdo->prepare("DELETE FROM joueur WHERE idJoueur = :id");
+            $requete->bindValue(':id', $id, PDO::PARAM_INT);
+            $result = $requete->execute();
+
+            $pdo->commit();
+            return $result;
+        } catch (Exception $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            return false;
+        }
+    }
 
     public function create(): bool {
         $pdo = Database::getPDO();

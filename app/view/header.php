@@ -22,12 +22,12 @@ if (!empty($_SESSION['user_email'])) {
 ?>
 <header>
         <section id="Titre">
-            <img src="assets/img/question-svgrepo-com.svg" alt="Logo de l'événement">
+            <img src="assets/img/ec8ea05d379666617c19b9cb79865d70.jpg" alt="Logo de l'événement">
             <h1>Journée tournoi LAN jeux-vidéo</h1>
             <div class="headerconnect">
                 <?php if (!empty($_SESSION['user_email']) && $actualUser) : ?>
                     <?php if ($isAdmin) : ?>
-                        <a class="SeConnecter" href="organisateur.php">Organisateur</a>
+                        <a class="SeConnecter" href="organisateur.php"><?php echo $actualUser->getNom() . " " . $actualUser->getPrenom(); ?></a>
                     <?php else: ?>
                         <a class="SeConnecter" href="tableauDeBord.php">Tableau de bord</a>
                     <?php endif; ?>

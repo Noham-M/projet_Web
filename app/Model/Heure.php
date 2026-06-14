@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/../database/database.php";
 class Heure {
     private ?int $idHeure = null;
     private ?int $Heure1 = null;
@@ -61,7 +62,7 @@ class Heure {
     
     public static function findById(int $id) {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("Select * from heure where idHeure = :id");
+        $requete = $pdo->prepare("SELECT * FROM heure WHERE idHeure = :id");
         $requete->bindValue(':id',$id,PDO::PARAM_INT);
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS,Heure::class);

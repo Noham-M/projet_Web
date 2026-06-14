@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/../database/database.php";
 class Scene
 {
     private ?int $idScene = null;
@@ -31,7 +32,7 @@ class Scene
         return $this->nom;
     }
 
-    public function getidScene()
+    public function getIdScene()
     {
         return $this->idScene;
     }
@@ -39,7 +40,7 @@ class Scene
     public static function findAll()
     {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("SELECT * FROM Scene ORDER BY idScene ASC");
+        $requete = $pdo->prepare("SELECT * FROM scene ORDER BY idScene ASC");
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS, Scene::class);
         return $requete->fetchAll();
@@ -48,7 +49,7 @@ class Scene
     public static function findById(int $id)
     {
         $pdo = Database::getPDO();
-        $requete = $pdo->prepare("SELECT * FROM Scene WHERE idScene = :id");
+        $requete = $pdo->prepare("SELECT * FROM scene WHERE idScene = :id");
         $requete->bindValue(':id', $id, PDO::PARAM_INT);
         $requete->execute();
         $requete->setFetchMode(PDO::FETCH_CLASS, Scene::class);

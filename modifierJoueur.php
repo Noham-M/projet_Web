@@ -18,20 +18,59 @@ $passwordConfirm = '';
 $utilisateur = null;
 $Joueur = null;
 $success = '';
+$sessionUser = null;
+$editingAdminTarget = false;
 
+$isAdmin = false;
 if (!empty($_SESSION['user_email'])) {
-    $utilisateur = Utilisateur::findByEmail($_SESSION['user_email']);
-    if ($utilisateur) {
-        $Nom = $utilisateur->getNom();
-        $Prenom = $utilisateur->getPrenom();
-        $Email = $utilisateur->getEmail();
+    try {
+        $sessionUser = Utilisateur::findByEmail($_SESSION['user_email']);
+        if ($sessionUser) {
+            $utilisateur = $sessionUser;
+            $Nom = $utilisateur->getNom();
+            $Prenom = $utilisateur->getPrenom();
+            $Email = $utilisateur->getEmail();
 
-        $Joueur = $utilisateur->getJoueur();
-        if ($Joueur) {
-            $Pseudo = $Joueur->getPseudo();
-            $Description = $Joueur->getDescription();
-            $Photo = $Joueur->getImage();
+            $admins = Utilisateur::getAdmins();
+            foreach ($admins as $admin) {
+                if ($admin->getEmail() === $utilisateur->getEmail()) {
+                    $isAdmin = true;
+                    break;
+                }
+            }
+
+            if (!$isAdmin) {
+                $Joueur = $utilisateur->getJoueur();
+                if ($Joueur) {
+                    $Pseudo = $Joueur->getPseudo();
+                    $Description = $Joueur->getDescription();
+                    $Photo = $Joueur->getImage();
+                }
+            } else {
+                $editId = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
+                if ($editId) {
+                    $Joueur = Joueur::findById($editId);
+                    if ($Joueur) {
+                        $editingAdminTarget = true;
+                        $Pseudo = $Joueur->getPseudo();
+                        $Description = $Joueur->getDescription();
+                        $Photo = $Joueur->getImage();
+                        $utilisateur = $Joueur->getUtilisateur() ?? $utilisateur;
+                        if ($utilisateur) {
+                            $Nom = $utilisateur->getNom();
+                            $Prenom = $utilisateur->getPrenom();
+                            $Email = $utilisateur->getEmail();
+                        }
+                    } else {
+                        $error['access'] = "Joueur introuvable.";
+                    }
+                }
+            }
         }
+    } catch (Exception $e) {
+        $error['db'] = "Erreur de base de données.";
+        $utilisateur = null;
+        $Joueur = null;
     }
 }
 
@@ -46,31 +85,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error['prenom'] = "Le prénom est obligatoire.";
     }
 
-    $Pseudo = trim($_POST['user_pseudo'] ?? $Pseudo);
-    if (empty($Pseudo)) {
-        $error['pseudo'] = "Le pseudo est obligatoire.";
+    if (!$isAdmin) {
+        $Pseudo = trim($_POST['user_pseudo'] ?? $Pseudo);
+        if (empty($Pseudo)) {
+            $error['pseudo'] = "Le pseudo est obligatoire.";
+        }
+
+        $Description = trim($_POST['user_description'] ?? $Description);
+        if (empty($Description)) {
+            $error['description'] = "La description est obligatoire.";
+        }
+
+        if (isset($_POST['user_photo']) && trim($_POST['user_photo']) === '' && $Joueur) {
+            $Photo = $Joueur->getImage();
+        } else {
+            $Photo = trim($_POST['user_photo'] ?? $Photo);
+        }
+
+        if (empty($Photo)) {
+            $error['photo'] = "Le nom du fichier photo est obligatoire.";
+        }
     }
 
     $Email = trim($_POST['user_email'] ?? $Email);
     if (!filter_var($Email, FILTER_VALIDATE_EMAIL)) {
         $error['Email'] = "L'email n'est pas valide.";
-    } elseif ($utilisateur && $Email !== $utilisateur->getEmail() && Utilisateur::findByEmail($Email)) {
-        $error['Email'] = "Cet email est déjà utilisé.";
-    }
-
-    $Description = trim($_POST['user_description'] ?? $Description);
-    if (empty($Description)) {
-        $error['description'] = "La description est obligatoire.";
-    }
-
-    if (isset($_POST['user_photo']) && trim($_POST['user_photo']) === '' && $Joueur) {
-        $Photo = $Joueur->getImage();
-    } else {
-        $Photo = trim($_POST['user_photo'] ?? $Photo);
-    }
-
-    if (empty($Photo)) {
-        $error['photo'] = "Le nom du fichier photo est obligatoire.";
+    } elseif ($utilisateur && $Email !== $utilisateur->getEmail()) {
+        try {
+            if (Utilisateur::findByEmail($Email)) {
+                $error['Email'] = "Cet email est déjà utilisé.";
+            }
+        } catch (Exception $e) {
+            $error['db'] = "Erreur de base de données.";
+        }
     }
 
     $Password = $_POST['user_password'] ?? "";
@@ -94,7 +141,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $utilisateur->setEmail($Email);
             $utilisateur->setPassword($Password);
             $userUpdated = $utilisateur->update();
-            if ($userUpdated) {
+            if ($userUpdated && (!$isAdmin || !$editingAdminTarget)) {
                 $_SESSION['user_email'] = $Email;
             }
         }
@@ -148,26 +195,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
                 ?>
 
-                <label for="pseudo">Pseudo :</label>
-                <input type="text" id="pseudo" name="user_pseudo" placeholder="Votre pseudo..." value="<?php echo htmlspecialchars($Pseudo); ?>" required>
-                <?php if (isset($error['pseudo'])) {
-                    echo "<span>" . $error['pseudo'] . "</span><br>";
-                }
-                ?>
+                <?php if (!$isAdmin) : ?>
+                    <label for="pseudo">Pseudo :</label>
+                    <input type="text" id="pseudo" name="user_pseudo" placeholder="Votre pseudo..." value="<?php echo htmlspecialchars($Pseudo); ?>" required>
+                    <?php if (isset($error['pseudo'])) {
+                        echo "<span>" . $error['pseudo'] . "</span><br>";
+                    }
+                    ?>
 
-                <label for="message">Description :</label>
-                <textarea id="message" name="user_description" placeholder="Parlez un peu de vous..." required><?php echo htmlspecialchars($Description); ?></textarea>
-                <?php if (isset($error['description'])) {
-                    echo "<span>" . $error['description'] . "</span><br>";
-                }
-                ?>
+                    <label for="message">Description :</label>
+                    <textarea id="message" name="user_description" placeholder="Parlez un peu de vous..." required><?php echo htmlspecialchars($Description); ?></textarea>
+                    <?php if (isset($error['description'])) {
+                        echo "<span>" . $error['description'] . "</span><br>";
+                    }
+                    ?>
 
-                <label for="photo">Nom du fichier photo :</label>
-                <input type="text" id="photo" name="user_photo" placeholder="Nom du fichier photo" value="<?php echo htmlspecialchars($Photo); ?>">
-                <?php if (isset($error['photo'])) {
-                    echo "<span>" . $error['photo'] . "</span><br>";
-                }
-                ?>
+                    <label for="photo">Nom du fichier photo :</label>
+                    <input type="text" id="photo" name="user_photo" placeholder="Nom du fichier photo" value="<?php echo htmlspecialchars($Photo); ?>">
+                    <?php if (isset($error['photo'])) {
+                        echo "<span>" . $error['photo'] . "</span><br>";
+                    }
+                    ?>
+                <?php endif; ?>
 
                 <label for="email">E-mail :</label>
                 <input type="email" id="email" name="user_email" placeholder="Votre adresse mail" value="<?php echo htmlspecialchars($Email); ?>" required>
